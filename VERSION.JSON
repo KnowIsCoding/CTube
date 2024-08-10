@@ -1,0 +1,15 @@
+{
+    "version": "1.0",
+    "dependencies": [
+        "PyQt5",
+        "requests",
+        "beautifulsoup4",
+        "json",
+        "string",
+        "random",
+        "os",
+        "time",
+        "webbrowser",
+        "subprocess"
+    ]
+}

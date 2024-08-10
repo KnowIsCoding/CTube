@@ -1,0 +1,10 @@
+PyQt5
+requests
+beautifulsoup4
+json
+string
+random
+os
+time
+webbrowser
+subprocess

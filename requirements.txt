@@ -8,3 +8,11 @@ os
 time
 webbrowser
 subprocess
+hatchling>=0.21.0
+packaging>=21.3
+apscheduler==3.7.0
+requests==2.25.0
+python-decouple==3.3
+prometheus-client==0.9.0
+pygithub==1.51
+logfmt-logger==0.1.2

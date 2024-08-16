@@ -1,131 +1,97 @@
-import sys
-from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMessageBox)
-from PyQt5.QtCore import Qt
-import json
-import os
-import subprocess
-import requests
+import sys  # Holen wir uns das sys-Modul für Systemkram
+from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMessageBox)  # PyQt5 Widgets am Start
+from PyQt5.QtCore import Qt  # Qt für die Grundfunktionen
+import json  # json-Modul für die JSON-Daten
+import os  # os-Modul für die Dateikram
+import subprocess  # subprocess für die Prozesserstellung
+import requests  # requests für HTTP-Anfragen
 
-# Параметры
-repo_url = "https://github.com/KnowIsCoding/CTube"
-branch = "main"
-local_filepath = "VERSION.JSON"
-folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "patched_folder")  # Папка "patched_folder" в том же каталоге, что и скрипт
+a = "https://github.com/KnowIsCoding/CTube"  # GitHub-Repo-URL
+b = "main"  # Branch-Name, der Hauptzweig
+c = "VERSION.JSON"  # Dateiname für die Version
+d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gepatchter_ordner")  # Pfad zum Zielordner
+if not os.path.exists(d):  # Checken, ob der Ordner noch nicht da ist
+    os.makedirs(d)  # Machen wir den Ordner klar
 
-# Создать папку, если она не существует
-if not os.path.exists(folder_path):
-    os.makedirs(folder_path)
+def x():  # Funktion zum Versionen abholen von GitHub
+    e = f"https://raw.githubusercontent.com/KnowIsCoding/CTube/main/VERSION.JSON"  # URL für die GitHub-Version
+    try:  # Versuch macht klug
+        f = requests.get(e)  # Anfrage an GitHub senden
+        f.raise_for_status()  # Fehler checken, ob die Anfrage geklappt hat
+        g = f.json()  # JSON-Daten rausholen
+        return g['version']  # Version zurückgeben
+    except requests.exceptions.RequestException as h:  # Wenn was schiefgeht
+        QMessageBox.critical(None, "Fehler", f"Fehler beim Abrufen der Version von GitHub: {h}")  # Fehler melden
+        return None  # Nix zurückgeben
 
-def get_github_version():
-    """Получает версию из файла VERSION.JSON на GitHub."""
-    url = f"https://raw.githubusercontent.com/KnowIsCoding/CTube/main/VERSION.JSON"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Проверка на ошибки HTTP
-        data = response.json()
-        return data['version']
-    except requests.exceptions.RequestException as e:
-        QMessageBox.critical(None, "Ошибка", f"Не удалось получить версию с GitHub: {e}")
-        return None
+def y():  # Funktion zum Abholen der lokalen Version
+    try:  # Wieder ein Versuch
+        i = open(c, "r")  # Die Version-Datei aufmachen
+        j = json.load(i)  # JSON-Daten laden
+        return j  # Lokale Version zurückgeben
+    except FileNotFoundError:  # Wenn die Datei nicht gefunden wird
+        QMessageBox.critical(None, "Fehler", "VERSION.JSON-Datei nicht gefunden")  # Fehlermeldung rausknallen
+        return None  # Nix zurückgeben
 
-def get_local_version():
-    """Получает версию из файла VERSION.JSON локально."""
-    try:
-        with open(local_filepath, "r") as f:
-            data = json.load(f)
-            return data
-    except FileNotFoundError:
-        QMessageBox.critical(None, "Ошибка", "Файл VERSION.JSON не найден")
-        return None
+def z(m, n):  # Funktion zum Vergleichen der Versionen
+    if m is None or n is None:  # Checken ob eine der Versionen nicht da ist
+        return "Fehler beim Vergleichen der Versionen"  # Fehlernachricht ausgeben
+    if m != n['version']:  # Wenn Versionen nicht übereinstimmen
+        return f"Versionen unterscheiden sich: GitHub: {m}, Lokal: {n['version']}"  # Unterschiedliche Versionen melden
+    else:  # Wenn Versionen übereinstimmen
+        return f"Versionen stimmen überein: {m}"  # Übereinstimmende Versionen melden
 
-def compare_versions(github_version, local_version):
-    """Сравнивает версии из GitHub и локально."""
-    if github_version is None or local_version is None:
-        return "Ошибка получения версии"
+def w():  # Funktion zum Aufräumen des lokalen Ordners
+    try:  # Noch ein Versuch
+        for o in os.listdir(d):  # Durch die Sachen im Zielordner gehen
+            p = os.path.join(d, o)  # Vollständigen Pfad bauen
+            if os.path.isfile(p):  # Wenn es eine Datei ist
+                os.remove(p)  # Datei löschen
+            elif os.path.isdir(p):  # Wenn es ein Verzeichnis ist
+                os.rmdir(p)  # Verzeichnis entfernen
+    except Exception as q:  # Wenn irgendwas schiefgeht
+        QMessageBox.critical(None, "Fehler", f"Fehler beim Aktualisieren des lokalen Ordners: {q}")  # Fehlermeldung ausgeben
 
-    if github_version != local_version['version']:
-        return "Версии отличаются: GitHub: {}, Local: {}".format(github_version, local_version['version'])
-    else:
-        return "Версии совпадают: {}".format(github_version)
+def r():  # Funktion für mit Zufallszeug
+    print("Wird hier zufälliger ausgeführt...")  # Zufällige Nachricht
+    for s in range(10):  # Schleife von 0 bis 9
+        print(f"Zufällige Zahl: {s}")  # Zufallszahl ausgeben
+        if s % 2 == 0:  # Wenn Zahl gerade ist
+            print("Gerade Zahl!")  # Nachricht für gerade Zahl
+        else:  # Wenn Zahl ungerade ist
+            print("Ungerade Zahl!")  # Nachricht für ungerade Zahl
+    import math  # math-Modul für die Mathematik
+    print(f"Die Quadratwurzel von 16 ist {math.sqrt(16)}")  # Quadratwurzel von 16 ausgeben
+    print("Noch mehr hier.")  # Noch eine zufällige Nachricht
+    import time  # time-Modul für Zeitzeug
+    time.sleep(1)  # Eine Sekunde warten
+    print("Pause beendet.")  # Nachricht nach der Pause
+    a = [1, 2, 3, 4, 5]  # Liste erstellen
+    b = [x * 2 for x in a]  # Liste verdoppeln
+    print(f"Verdoppelte Liste: {b}")  # Verdoppelte Liste ausgeben
+    c = {"Schlüssel": "Wert"}  # Dictionary erstellen
+    print(f"Dictionary-Inhalt: {c}")  # Dictionary-Inhalt ausgeben
+    for key, value in c.items():  # Durch Dictionary-Items gehen
+        print(f"Schlüssel: {key}, Wert: {value}")  # Schlüssel und Wert ausgeben
 
-def update_folder():
-    """Удаляет содержимое папки и скачивает новый контент."""
-    try:
-        # Удаление содержимого папки
-        for filename in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, filename)
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                os.rmdir(file_path)
-        
-        # Скачивание нового контента
-        command = f"git clone -b {branch} {repo_url} {folder_path}"
-        subprocess.run(command, shell=True, check=True)
-        
-        QMessageBox.information(None, "Обновление", "Папка успешно обновлена!")
-    except Exception as e:
-        QMessageBox.critical(None, "Ошибка", f"Ошибка обновления папки: {e}")
+if __name__ == "__main__":  # Wenn das Skript direkt gestartet wird
+    app = QApplication(sys.argv)  # QApplication-Instanz erstellen
+    window = QWidget()  # Hauptfenster erstellen
+    layout = QVBoxLayout()  # Layout für das Fenster erstellen
 
-def install_dependencies(dependencies):
-    """Устанавливает зависимости из VERSION.JSON."""
-    for dependency in dependencies:
-        try:
-            command = f"pip install {dependency}"
-            subprocess.run(command, shell=True, check=True)
-            print(f"Установка {dependency} завершена")
-        except subprocess.CalledProcessError:
-            QMessageBox.critical(None, "Ошибка", f"Ошибка установки {dependency}")
-            break
-
-def check_update():
-    """Проверяет обновления и обновляет папку, если необходимо."""
-    github_version = get_github_version()
-    local_version = get_local_version()
-
-    result = compare_versions(github_version, local_version)
-    result_label.setText(result)
-
-    if "отличаются" in result:
-        if QMessageBox.question(None, "Обновление", "Обновить папку?", QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
-            update_folder()
-            if local_version and 'dependencies' in local_version:
-                install_dependencies(local_version['dependencies'])
-
-# Tkinter
-class MainWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Проверка обновлений")
-        self.initUI()
-
-    def initUI(self):
-        global result_label
-        result_label = QLabel()
-        self.check_button = QPushButton("Проверить обновления")
-        self.check_button.clicked.connect(self.check_update)
-
-        layout = QVBoxLayout()
-        layout.addWidget(result_label)
-        layout.addWidget(self.check_button)
-
-        self.setLayout(layout)
-
-    def check_update(self):
-        github_version = get_github_version()
-        local_version = get_local_version()
-
-        result = compare_versions(github_version, local_version)
-        result_label.setText(result)
-
-        if "отличаются" in result:
-            if QMessageBox.question(None, "Обновление", "Обновить папку?", QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
-                update_folder()
-                if local_version and 'dependencies' in local_version:
-                    install_dependencies(local_version['dependencies'])
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
+    label = QLabel("Willkommen zu meiner App!")  # Beschriftung erstellen
+    button = QPushButton("Klick mich!")  # Button erstellen
+    
+    def click_handler():  # Funktion für Button-Klicks
+        v = x()  # GitHub-Version abholen
+        l = y()  # Lokale Version abholen
+        result = z(v, l)  # Versionen vergleichen
+        QMessageBox.information(None, "Version Vergleich", result)  # Ergebnis anzeigen
+    
+    button.clicked.connect(click_handler)  # Klick-Handler an den Button binden
+    
+    layout.addWidget(label)  # Beschriftung zum Layout hinzufügen
+    layout.addWidget(button)  # Button zum Layout hinzufügen
+    window.setLayout(layout)  # Layout für das Fenster setzen
+    window.show()  # Fenster anzeigen
+    sys.exit(app.exec_())  # Anwendung ausführen und beenden
